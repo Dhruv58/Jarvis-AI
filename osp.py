@@ -2,8 +2,9 @@ import os
 import subprocess as sp
 
 paths = {
-    'discord': "C:\\ProgramData\\ASUS\\Discord\\app-1.0.9024\\Discord++.exe",
-    'gta5': ""
+    'notepad': "C:\\Users\\ASUS\\AppData\\Local\\Microsoft\\WindowsApps\\notepad.exe",
+    'discord': "C:\\ProgramData\\ASUS\\Discord\\app-1.0.9028\\discord.exe",
+    'gta': "D:\\Tanishq\\GTA\\Launcher.exe"
 }
 
 
@@ -12,7 +13,7 @@ def open_cmd():
 
 
 def open_notepad():
-    os.startfile(paths['discord'])
+    os.startfile(paths['notepad'])
 
 
 def open_camera():
@@ -20,7 +21,8 @@ def open_camera():
 
 
 def open_gta():
-    os.startfile(paths['gta5'])
-#
-# def open_calculator():
-#     sp.Popen(paths['calculator'])
+    os.startfile(paths['gta'])
+
+
+def open_discord():
+    os.startfile(paths['discord'])

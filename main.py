@@ -1,11 +1,7 @@
 import pyttsx3
 import requests
 import keyboard
-# import tkinter
-# from tkinter import *
-# from tkinter import _tkinter
 import webbrowser
-# from PIL import ImageTk,Image
 import pyautogui  # pip install pyautogui
 import random
 from decouple import config
@@ -18,7 +14,7 @@ import wolframalpha  # pip install wolkframalpha
 import imdb  # pip install imdbpy
 import time
 
-from osp import open_camera, open_notepad, open_cmd, open_gta
+from osp import open_camera, open_notepad, open_cmd, open_discord, open_gta
 from online import search_on_wikipedia, play_on_youtube, search_on_google, send_email, get_random_joke, get_latest_news, \
     find_my_ip, get_weather_report
 
@@ -36,14 +32,6 @@ voices = engine.getProperty('voices')
 engine.setProperty('voice', voices[1].id)
 
 
-#
-# window = Tk()
-#
-# window.configure(bg = “”)
-#
-# SET_WIDTH = 800
-#
-# SET_HEIGHT = 700
 def speak(text):
     engine.say(text)
     engine.runAndWait()
@@ -125,9 +113,10 @@ if __name__ == '__main__':
                     open_notepad()
                 elif 'open command prompt' in query:
                     open_cmd()
-                elif 'open gta 5' in query:
+                elif 'open discord' in query:
+                    open_discord()
+                elif 'open gta' in query:
                     open_gta()
-
                     # elif "can you calculate" in query:
                     #
 

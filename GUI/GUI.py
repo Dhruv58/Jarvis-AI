@@ -7,11 +7,13 @@ from kivy.clock import Clock
 from kivy.config import Config
 from kivy.graphics import Rotate, Rectangle, Color
 from kivy.uix.image import Image
-
+import speech_recognition as sr
 from kivy.uix.label import Label
 from kivy.uix.boxlayout import BoxLayout
 import time
 from kivy.uix.textinput import TextInput
+import threading
+
 
 # Set the width and height of the screen
 width, height = 1920, 1080
@@ -66,11 +68,11 @@ class CircleWidget(Widget):
         # Create a rotating button representing the circle
         self.add_widget(Image(source='border.eps.png', size=(1920, 1080)))
         self.circle = RotatingButton(size=(284.0, 284.0), background_normal='circle.png')
+        self.circle.bind(on_press=self.start_recording)
         # self.add_widget(Image(source='jarvis.gif', size=(self.min_size, self.min_size)))
         self.add_widget(Image(source='jarvis.gif', size=(self.min_size, self.min_size), pos=(SCREEN_WIDTH / 2 - self.min_size / 2, SCREEN_HEIGHT / 2 - self.min_size / 2)))
 
         # Create a label for displaying the spoken text
-        # self.add_widget(Label(text='Hey, I am Jarvis!', font_size=20, markup=True, pos=(0, 0)))
         
         time_layout = BoxLayout(orientation='vertical', pos=(150,900))
         self.time_label = Label(text='', font_size=24, markup=True, font_name='mw.ttf')
@@ -98,6 +100,30 @@ class CircleWidget(Widget):
         self.add_widget(self.circle)
 
 
+    # def start_recording(self, *args):
+    #     r = sr.Recognizer()
+    #     with sr.Microphone() as source:
+    #         r.adjust_for_ambient_noise(source)
+    #         audio = r.listen(source)
+
+    #     query = r.recognize_google(audio)
+    #     self.subtitles_input.text = query
+
+    def start_recording(self, *args):
+        # Move the speech recognition logic to a separate thread
+        threading.Thread(target=self.run_speech_recognition).start()
+
+    def run_speech_recognition(self):
+        r = sr.Recognizer()
+        with sr.Microphone() as source:
+            r.adjust_for_ambient_noise(source)
+            audio = r.listen(source)
+
+        query = r.recognize_google(audio)
+        
+        # Update the GUI from the main thread using Clock.schedule_once
+        Clock.schedule_once(lambda dt: setattr(self.subtitles_input, 'text', query))
+
 
     def update_time(self, dt):
         current_time = time.strftime('TIME\n\t%H:%M:%S')
@@ -120,6 +146,7 @@ class CircleWidget(Widget):
         self.circle.size = (self.size_value, self.size_value)
         self.circle.pos = (SCREEN_WIDTH / 2 - self.circle.width / 2, SCREEN_HEIGHT / 2 - self.circle.height / 2)
 
+
     def update_volume(self, indata, frames, time, status):
         volume_norm = np.linalg.norm(indata) * 100
         self.volume = volume_norm
@@ -129,10 +156,14 @@ class CircleWidget(Widget):
         if len(self.volume_history) > self.volume_history_size:
             self.volume_history.pop(0)
 
+
     def start_listening(self):
         self.stream = sd.InputStream(callback=self.update_volume)
         self.stream.start()
+        
+        
 
+        
 # Custom Kivy App class
 class MyKivyApp(App):
 

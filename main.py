@@ -13,6 +13,7 @@ from pprint import pprint
 import wolframalpha  # pip install wolkframalpha
 import imdb  # pip install imdbpy
 import time
+from GUI.GUI import MyKivyApp
 
 from osp import open_camera, open_notepad, open_cmd, open_discord, open_gta
 from online import search_on_wikipedia, play_on_youtube, search_on_google, send_email, get_random_joke, get_latest_news, \
@@ -98,7 +99,8 @@ def take_user_input():
 if __name__ == '__main__':
 
     wish_me()
-
+    
+    
     while True:
         if listening:
             try:

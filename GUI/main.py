@@ -161,7 +161,7 @@ if __name__ == '__main__':
                         speak("I couldn't calculate that. Please try again.")
 
                 elif 'what is' in query or 'who is' in query or 'which is' in query or 'where did ' in query:
-                    app_id = "6QA5RJ-LHVGXJXLJ7"  # Replace with your actual Wolfram Alpha App ID
+                    app_id = ""  # Replace with your actual Wolfram Alpha App ID
                     client = wolframalpha.Client(app_id)
                     try:
 

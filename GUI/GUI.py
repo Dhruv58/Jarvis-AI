@@ -14,7 +14,18 @@ import time
 from kivy.uix.textinput import TextInput
 import threading
 import keyboard
+import pyttsx3
+import pyautogui
+import webbrowser
+import wolframalpha
+import imdb
+import pprint
+import requests
+# from main import wish_me,take_user_input
 
+
+from osp import open_camera,open_cmd,open_discord,open_gta,open_notepad
+from online import find_my_ip, play_on_youtube,search_on_google,search_on_wikipedia,send_email,get_latest_news,get_random_joke,get_weather_report
 
 # Set the width and height of the screen
 width, height = 1920, 1080
@@ -34,6 +45,191 @@ SCREEN_HEIGHT = Config.getint('graphics', 'height')
 # Print the screen width and height for verification
 print(SCREEN_WIDTH, SCREEN_HEIGHT)
 
+engine = pyttsx3.init('sapi5')
+
+engine.setProperty('volume', 1.5)
+engine.setProperty('rate', 220)
+
+voices = engine.getProperty('voices')
+engine.setProperty('voice', voices[1].id)
+
+
+def speak(text):
+    engine.say(text)
+    engine.runAndWait()
+
+def handle_jarvis_commands(query):
+        if "how are you" in query:
+            speak("I am fine how are you.")
+        elif 'open camera' in query:
+            open_camera()
+            speak("Opening camera")
+        elif 'open notepad' in query:
+            open_notepad()
+            speak("Opening notepad")
+        elif 'open command prompt' in query:
+            open_cmd()
+            speak("Opening command prompt")
+        elif 'open discord' in query:
+            open_discord()
+            speak("Opening discord")
+        elif 'open gta' in query:
+            open_gta()
+            speak("Opening Gta5")
+        #             # elif "can you calculate" in query:
+        #             #
+
+        elif 'subscribe' in query:
+            speak(
+                        "Everyone who are watching this video, Please subscribe for more amazing content from error by "
+                        "night. I will show you how to do this")
+            speak("Firstly Go to youtube")
+            webbrowser.open("https://www.youtube.com/")
+            speak("click on the search bar")
+            pyautogui.moveTo(806, 125, 1)
+            pyautogui.click(x=806, y=125, clicks=1, interval=0, button='left')
+            speak("Error by night")
+            pyautogui.typewrite("Error by night", 0.1)
+            time.sleep(1)
+            speak("press enter")
+            pyautogui.press('enter')
+            pyautogui.moveTo(971, 314, 1)
+            speak("Here you will see our channel")
+            pyautogui.moveTo(1688, 314, 1)
+            speak("click here to subscribe our channel")
+            pyautogui.click(x=1688, y=314, clicks=1, interval=0, button='left')
+            speak("And also Don't forget to press the bell icon")
+            pyautogui.moveTo(1750, 314, 1)
+            pyautogui.click(x=1750, y=314, clicks=1, interval=0, button='left')
+            speak("turn on all notifications")
+            pyautogui.click(x=1750, y=320, clicks=1, interval=0, button='left')
+
+        # elif 'calculate' in query:
+        #             app_id = "6QA5RJ-LHVGXJXLJ7"
+        #             client = wolframalpha.Client(app_id)
+        #             ind = query.lower().split().index("calculate")
+        #             text = query.split()[ind + 1:]
+        #             res = client.query(" ".join(text))
+        #             try:
+        #                 ans = next(res.results).text
+        #                 speak("The answer is " + ans)
+        #                 print("the answer is " + ans)
+        #             except StopIteration:
+        #                 speak("I couldn't calculate that. Please try again.")
+
+        # elif 'what is' in query or 'who is' in query or 'which is' in query or 'where did ' in query:
+        #             app_id = "6QA5RJ-LHVGXJXLJ7"  # Replace with your actual Wolfram Alpha App ID
+        #             client = wolframalpha.Client(app_id)
+        #             try:
+
+        #                 ind = query.lower().index('what is') if 'what is' in query.lower() else \
+        #                     query.lower().index('who is') if 'who is' in query.lower() else \
+        #                         query.lower().index('which is') if 'which is' in query.lower() else None
+
+        #                 if ind is not None:
+        #                     text = query.split()[ind + 2:]
+        #                     res = client.query(" ".join(text))
+        #                     ans = next(res.results).text
+        #                     speak("The answer is " + ans)
+        #                     print("The answer is " + ans)
+        #                 else:
+        #                     speak("I couldn't find that. Please try again.")
+        #             except StopIteration:
+        #                 speak("I couldn't find that. Please try again.")
+
+        # elif 'ip address' in query:
+        #             ip_address = find_my_ip()
+        #             speak(
+        #                 f'Your IP Address is {ip_address}.\n For your convenience, I am printing it on the screen sir.')
+        #             print(f'Your IP Address is {ip_address}')
+
+        # elif 'search on wikipedia' in query:
+        #             speak('What do you want to search on Wikipedia, sir?')
+        #             search_query = CircleWidget.start_recording().lower()
+        #             results = search_on_wikipedia(search_query)
+        #             speak(f"According to Wikipedia, {results}")
+        #             speak("For your convenience, I am printing it on the screen sir.")
+        #             print(results)
+
+        # elif 'youtube' in query:
+        #             speak('What do you want to play on Youtube, sir?')
+        #             video = CircleWidget.start_recording().lower()
+        #             play_on_youtube(video)
+
+        # elif 'where is' in query:
+        #             ind = query.lower().split().index("is")
+        #             location = query.split()[ind + 1:]
+        #             url = "https://www.google.com/maps/place/" + "".join(location)
+        #             speak("This is where " + str(location) + " is.")
+        #             webbrowser.open(url)
+
+        # elif 'search on google' in query:
+        #             speak('What do you want to search on Google, sir?')
+        #             query = CircleWidget.start_recording().lower()
+        #             search_on_google(query)
+
+        # elif "send an email" in query:
+        #             speak("On what email address do I send sir? Please enter in the console: ")
+        #             receiver_address = input("Enter email address: ")
+        #             speak("What should be the subject sir?")
+        #             subject = CircleWidget.start_recording().capitalize()
+        #             speak("What is the message sir?")
+        #             message = CircleWidget.start_recording().capitalize()
+        #             if send_email(receiver_address, subject, message):
+        #                 speak("I've sent the email sir.")
+        #                 print("I've sent the email sir.")
+        #             else:
+        #                 speak("Something went wrong while I was sending the mail. Please check the error logs sir.")
+
+        # elif 'tell me any joke' in query:
+        #             speak(f"Hope you like this one sir")
+        #             joke = get_random_joke()
+        #             speak(joke)
+        #             speak("For your convenience, I am printing it on the screen sir.")
+        #             pprint(joke)
+
+        # elif 'movie' in query:
+        #             movies_db = imdb.IMDb()
+        #             speak("please tell me the movie name :")
+        #             text = CircleWidget.start_recording()
+        #             movies = movies_db.search_movie(text)
+        #             speak("Searching for" + text)
+        #             speak("I Found these: ")
+        #             for movie in movies:
+        #                 title = movie["title"]
+        #                 year = movie["year"]
+        #                 speak(f"{title}-{year}")
+        #                 info = movie.getID()
+        #                 movie_info = movies_db.get_movie(info)
+        #                 rating = movie_info["rating"]
+        #                 cast = movie_info["cast"]
+        #                 actor = cast[0:5]
+        #                 plot = movie_info.get('plot outline', 'Plot summary not available')
+        #                 speak(
+        #                     f'{title} was released in {year} has imdb ratings of {rating}.It has a cast of {actor} . The plot summary'
+        #                     f'of movie is {plot}')
+        #                 print(
+        #                     f'{title} was released in {year} has imdb ratings of {rating}.It has a cast of {actor} The plot summary '
+        #                     f'of movie is {plot}')
+
+        # elif 'give me news' in query:
+        #             speak(f"I'm reading out the latest news headlines, sir")
+        #             speak(get_latest_news())
+        #             speak("For your convenience, I am printing it on the screen sir.")
+        #             print(*get_latest_news(), sep='\n')
+
+        # elif 'weather' in query:
+        #             ip_address = find_my_ip()
+        #             city = requests.get(f"https://ipapi.co/{ip_address}/city/").text
+        #             speak(f"Getting weather report for your city {city}")
+        #             weather, temperature, feels_like = get_weather_report(city)
+        #             speak(f"The current temperature is {temperature}, but it feels like {feels_like}")
+        #             speak(f"Also, the weather report talks about {weather}")
+        #             speak("For your convenience, I am printing it on the screen sir.")
+        #             print(f"Description: {weather}\nTemperature: {temperature}\nFeels like: {feels_like}")
+        
+
+
 # Custom button class that rotates
 class RotatingButton(Button):
 
@@ -50,6 +246,8 @@ class RotatingButton(Button):
         self.canvas.before.clear()
         with self.canvas.before:
             Rotate(angle=self.background_angle, origin=self.center)
+
+
 
 # Custom widget representing the circle
 class CircleWidget(Widget):
@@ -87,14 +285,15 @@ class CircleWidget(Widget):
 
         self.subtitles_input = TextInput(
             text='Hey Dhruv! I am Jarvis, your personal assistant.',
-            font_size=20,
+            font_size=24,
             readonly=True,
             background_color=(0, 0, 0, 0),  # Set background color to be transparent
             foreground_color=(1, 1, 1, 1),  # Set text color to be white
             size_hint_y=None,
             height=80,  # Set the height of the TextInput
-            pos=(750, 100),
+            pos=(720, 100),
             width=1200,
+            font_name='teesri.otf',
         )
         self.add_widget(self.subtitles_input)
         self.vrh =  Label(text='', font_size=30, markup=True, font_name='mw.ttf', pos=(1500, 500))
@@ -130,14 +329,15 @@ class CircleWidget(Widget):
     def run_speech_recognition(self):
         r = sr.Recognizer()
         with sr.Microphone() as source:
-            r.adjust_for_ambient_noise(source)
+            # r.pause_threshold=1
             audio = r.listen(source)
 
-        query = r.recognize_google(audio)
+        query = r.recognize_google(audio,language="en-in")
         
-        self.handle.jarvis_commands(query)
         # Update the GUI from the main thread using Clock.schedule_once
         Clock.schedule_once(lambda dt: setattr(self.subtitles_input, 'text', query))
+        handle_jarvis_commands(query.lower())
+        return query.lower()
 
     
     
@@ -145,6 +345,8 @@ class CircleWidget(Widget):
         current_time = time.strftime('TIME\n\t%H:%M:%S')
         self.time_label.text = f'[b][color=3333ff]{current_time}[/color][/b]'
 
+    
+    
 
     def update_circle(self, dt):
         try:
@@ -207,6 +409,8 @@ class CircleWidget(Widget):
 class MyKivyApp(App):
 
     def build(self):
+        # speak('Hey Dhruv I am Jarvis your personal assistant')
+        
         circle_widget = CircleWidget()
 
         # Start listening to the audio stream
@@ -217,8 +421,10 @@ class MyKivyApp(App):
         self.btn_rotation_event = Clock.schedule_interval(circle_widget.circle.rotate_button, 1 / 60)
 
         return circle_widget
+        
 
 
 # Run the Kivy application
 if __name__ == '__main__':
     MyKivyApp().run()
+    

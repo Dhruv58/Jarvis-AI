@@ -8,8 +8,6 @@ from decouple import config
 EMAIL = ""
 PASSWORD = ""
 
-NEWS_API_KEY = config("NEWS_API_KEY")
-OPENWEATHER_APP_ID = config("OPENWEATHER_APP_ID")
 
 
 def find_my_ip():
@@ -22,20 +20,21 @@ def search_on_wikipedia(query):
     return results
 
 
-def play_on_youtube(video):
-    kit.playonyt(video)
-
-
 def search_on_google(query):
     kit.search(query)
 
 
-def send_email(receiver_address, subject, message):
+def youtube(video):
+    kit.playonyt(video)
+
+
+def send_email(receiver_add, subject, message):
     try:
         email = EmailMessage()
-        email['To'] = receiver_address
-        email["Subject"] = subject
+        email['To'] = receiver_add
+        email['Subject'] = subject
         email['From'] = EMAIL
+
         email.set_content(message)
         s = smtplib.SMTP("smtp.gmail.com", 587)
         s.starttls()
@@ -43,35 +42,26 @@ def send_email(receiver_address, subject, message):
         s.send_message(email)
         s.close()
         return True
+
     except Exception as e:
         print(e)
         return False
 
 
-def get_random_joke():
-    headers = {
-        'Accept': 'application/json'
-    }
-    res = requests.get("https://icanhazdadjoke.com/", headers=headers).json()
-    return res["joke"]
-
-
-def get_latest_news():
-    news_headlines = []
-    res = requests.get(
-        f"https://newsapi.org/v2/top-headlines?country=in&apiKey={NEWS_API_KEY}&category=general").json()
-    articles = res["articles"]
+def get_news():
+    news_headline = []
+    result = requests.get(f"https://newsapi.org/v2/top-headlines?country=in&category=general&apiKey"
+                          f"=d07c19e6f8f04d639d552f720d955ef7").json()
+    articles = result["articles"]
     for article in articles:
-        news_headlines.append(article["title"])
-    return news_headlines[:5]
+        news_headline.append(article["title"])
+    return news_headline[:6]
 
 
-def get_weather_report(city):
-    res = requests.get(
-        f"http://api.openweathermap.org/data/2.5/weather?q={city}&appid={OPENWEATHER_APP_ID}&units=metric").json()
+def weather_forecast(city):
+    res = requests.get(f"https://api.openweathermap.org/data/2.5/weather?q={city}&appid"
+                       f"=ce9d49ba91be7fbe0fac25f848bed3a8&units=metric").json()
     weather = res["weather"][0]["main"]
-    temprature = res["main"]["temp"]
+    temp = res["main"]["temp"]
     feels_like = res["main"]["feels_like"]
-    return weather, f"{temprature}°C", f"{feels_like}°C"
-
-
+    return weather, f"{temp}°C", f"{feels_like}°C"

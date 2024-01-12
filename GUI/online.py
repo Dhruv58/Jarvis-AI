@@ -51,7 +51,7 @@ def send_email(receiver_add, subject, message):
 def get_news():
     news_headline = []
     result = requests.get(f"https://newsapi.org/v2/top-headlines?country=in&category=general&apiKey"
-                          f"=d07c19e6f8f04d639d552f720d955ef7").json()
+                          f"=").json()
     articles = result["articles"]
     for article in articles:
         news_headline.append(article["title"])
@@ -60,7 +60,7 @@ def get_news():
 
 def weather_forecast(city):
     res = requests.get(f"https://api.openweathermap.org/data/2.5/weather?q={city}&appid"
-                       f"=ce9d49ba91be7fbe0fac25f848bed3a8&units=metric").json()
+                       f"=&units=metric").json()
     weather = res["weather"][0]["main"]
     temp = res["main"]["temp"]
     feels_like = res["main"]["feels_like"]

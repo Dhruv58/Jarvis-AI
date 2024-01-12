@@ -199,7 +199,7 @@ if __name__ == '__main__':
 
 
             elif "calculate" in query:
-                app_id = "6QA5RJ-H8L96AHPJH"
+                app_id = ""
                 client = wolframalpha.Client(app_id)
                 ind = query.lower().split().index("calculate")
                 text = query.split()[ind + 1:]
@@ -213,7 +213,7 @@ if __name__ == '__main__':
 
 
             elif 'what is' in query or 'who is' in query or 'which is' in query:
-                app_id = "6QA5RJ-H8L96AHPJH"
+                app_id = ""
                 client = wolframalpha.Client(app_id)
                 try:
 

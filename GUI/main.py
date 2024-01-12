@@ -9,6 +9,7 @@ import wolframalpha
 import pyautogui
 import webbrowser
 import time
+
 from datetime import datetime
 from decouple import config
 from random import choice

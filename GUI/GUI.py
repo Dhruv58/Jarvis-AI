@@ -1,4 +1,4 @@
-from datetime import datetime
+# from datetime import datetime
 import multiprocessing
 from random import choice
 from typing import Self
@@ -23,16 +23,17 @@ import pyttsx3
 import pyautogui
 import webbrowser
 import os
+import logging
 import subprocess as sp
-import pywhatkit
-import wolframalpha
+# import pywhatkit
+# import wolframalpha
 import imdb
 import pprint
-import requests
+# import requests
 from conv import random_text
 from multiprocessing.pool import ThreadPool
 from deco_rator import *
-# from main import wish_me,take_user_input
+from main import greet_me,take_command
 
 from online import find_my_ip, youtube,search_on_google,search_on_wikipedia,send_email,get_news,weather_forecast
 
@@ -68,48 +69,28 @@ def speak(text):
     engine.runAndWait()
   
 @threaded      
+
+
 def take_command():
-    # try:    
-    #     r = sr.Recognizer()
-    #     with sr.Microphone() as source:
-    #         print("Listening...")
-    #         r.pause_threshold = 1
-    #         audio = r.listen(source)
-
-    #     print("Recognizing....")
-    #     query = r.recognize_google(audio, language='en-in')
-    #     print(query)
-    #     return query.lower()
-
-    # except Exception as e:
-    #     print(e)
-    #     speak("Sorry I couldn't understand. Can you please repeat that?")
-    #     return 'None'
-    
-    r = sr.Recognizer()
-    with sr.Microphone() as source:
-        print("Listening...")
-        r.pause_threshold = 1
-        audio = r.listen(source)
-
     try:
-        print("Recognizing....")
-        queri = r.recognize_google(audio, language='en-in')
-        print(queri)
-        if not 'stop' in queri or 'exit' in queri:
-            speak(choice(random_text))
-        else:
-            hour = datetime.now().hour
-            if hour >= 21 and hour < 6:
-                speak("Good night sir,take care!")
-            else:
-                speak("Have a good day sir!")
-            exit()
+        r = sr.Recognizer()
+        with sr.Microphone() as source:
+            print("Listening...")
+            r.pause_threshold = 1
+            audio = r.listen(source)
 
-    except Exception:
-        speak("Sorry I couldn't understand. Can you please repeat that?")
-        queri = 'None'
-    return queri
+        try:
+            query = r.recognize_google(audio, language='en-in')
+            print(query)
+            return query.lower()
+        except Exception as e:
+            print(e)
+            speak("Sorry I couldn't understand. Can you please repeat that?")
+            return 'None'
+    except Exception as e:
+        logging.error(f"Error in take_command function: {e}")
+        speak("Sorry, there was an error. Please try again.")
+        return 'None'
     
     
 
@@ -209,7 +190,7 @@ class CircleWidget(Widget):
         r = sr.Recognizer()
         with sr.Microphone() as source:
             r.pause_threshold=1
-            audio = r.listen(source)
+            audio = r.listen(source,timeout=None)
 
         query = r.recognize_google(audio,language="en-in")
         # query = take_command()
@@ -251,27 +232,27 @@ class CircleWidget(Widget):
         volume_norm = np.linalg.norm(indata) * 100
         self.volume = volume_norm
         self.volume_history.append(volume_norm)
-        self.vrh.text = f'[b][color=3333ff]{np.mean(self.volume_history)}[/color][/b]'
-        self.vlh.text = f'[b][color=3333ff]{np.mean(self.volume_history)}[/color][/b]'
-        self.vlh.text = f'''[b][color=3344ff]
-            {round(self.volume_history[0], 7)}\n
-            {round(self.volume_history[1], 7)}\n
-            {round(self.volume_history[2], 7)}\n
-            {round(self.volume_history[3], 7)}\n
-            {round(self.volume_history[4], 7)}\n
-            {round(self.volume_history[5], 7)}\n
-            {round(self.volume_history[6], 7)}\n
-            [/color][/b]'''
+        # self.vrh.text = f'[b][color=3333ff]{np.mean(self.volume_history)}[/color][/b]'
+        # self.vlh.text = f'[b][color=3333ff]{np.mean(self.volume_history)}[/color][/b]'
+        # self.vlh.text = f'''[b][color=3344ff]
+        #     {round(self.volume_history[0], 7)}\n
+        #     {round(self.volume_history[1], 7)}\n
+        #     {round(self.volume_history[2], 7)}\n
+        #     {round(self.volume_history[3], 7)}\n
+        #     {round(self.volume_history[4], 7)}\n
+        #     {round(self.volume_history[5], 7)}\n
+        #     {round(self.volume_history[6], 7)}\n
+        #     [/color][/b]'''
         
-        self.vrh.text = f'''[b][color=3344ff]
-            {round(self.volume_history[0], 7)}\n
-            {round(self.volume_history[1], 7)}\n
-            {round(self.volume_history[2], 7)}\n
-            {round(self.volume_history[3], 7)}\n
-            {round(self.volume_history[4], 7)}\n
-            {round(self.volume_history[5], 7)}\n
-            {round(self.volume_history[6], 7)}\n
-            [/color][/b]'''
+        # self.vrh.text = f'''[b][color=3344ff]
+        #     {round(self.volume_history[0], 7)}\n
+        #     {round(self.volume_history[1], 7)}\n
+        #     {round(self.volume_history[2], 7)}\n
+        #     {round(self.volume_history[3], 7)}\n
+        #     {round(self.volume_history[4], 7)}\n
+        #     {round(self.volume_history[5], 7)}\n
+        #     {round(self.volume_history[6], 7)}\n
+        #     [/color][/b]'''
         # Keep the volume history within the defined size limit
         if len(self.volume_history) > self.volume_history_size:
             self.volume_history.pop(0)
@@ -478,5 +459,6 @@ class MyKivyApp(App):
 
 # Run the Kivy application
 if __name__ == '__main__':
-    MyKivyApp().run()
+    MyKivyApp = MyKivyApp() 
+    MyKivyApp.run()
     

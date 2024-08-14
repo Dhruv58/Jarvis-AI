@@ -11,6 +11,7 @@ from datetime import datetime
 from random import choice
 from kivy.uix import widget, image, label, boxlayout, textinput
 from kivy import clock
+import threading
 
 from constants import SCREEN_HEIGHT, SCREEN_WIDTH, RANDOM_TEXT
 from jarvis_button import JarvisButton
@@ -146,7 +147,7 @@ class Jarvis(widget.Widget):
 
 
     def update_volume(self, indata, frames, time, status):
-        volume_norm = np.linalg.norm(indata) * 100
+        volume_norm = np.linalg.norm(indata) * 200
         self.volume = volume_norm
         self.volume_history.append(volume_norm)
         self.vrh.text = f'[b][color=3333ff]{np.mean(self.volume_history)}[/color][/b]'

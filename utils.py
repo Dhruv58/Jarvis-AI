@@ -16,12 +16,12 @@ from constants import (
     WEATHER_FORECAST_API_KEY,
 )
 
-engine = pyttsx3.init("espeak")
+engine = pyttsx3.init()
 engine.setProperty("volume", 1.0)
 engine.setProperty("rate", 200)
 
 voices = engine.getProperty("voices")
-engine.setProperty("voice", f"{voices[10].id}+m5")
+engine.setProperty("voice", voices[1].id)
 
 
 def speak(text):

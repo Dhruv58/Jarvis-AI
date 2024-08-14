@@ -1,7 +1,7 @@
 import pyttsx3
 import requests
 import speech_recognition as sr
-# import keyboard
+import keyboard
 import os
 import subprocess as sp
 import imdb
@@ -13,8 +13,8 @@ import time
 from datetime import datetime
 from decouple import config
 from random import choice
-from conv import random_text
-from online import find_my_ip, search_on_google, search_on_wikipedia, youtube, send_email, get_news, weather_forecast
+from constants import random_text
+from utils import find_my_ip, search_on_google, search_on_wikipedia, youtube, send_email, get_news, weather_forecast
 
 engine = pyttsx3.init('espeak')
 engine.setProperty('volume', 1.5)

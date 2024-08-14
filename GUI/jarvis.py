@@ -1,78 +1,72 @@
-# from datetime import datetime
-import multiprocessing
-from random import choice
-from typing import Self
+import time
 import numpy as np
 import sounddevice as sd
-from kivy.app import App
-from kivy.uix.widget import Widget
-from kivy.uix.button import Button
-from kivy.clock import Clock
-from kivy.config import Config
-from kivy.graphics import Rotate, Rectangle, Color
-from kivy.uix.image import Image
-# import speech_recognition as sr
 import speech_recognition as sr
-from kivy.uix.label import Label
-from kivy.uix.boxlayout import BoxLayout
-import time
-from kivy.uix.textinput import TextInput
-import threading
-import keyboard
-import pyttsx3
-import pyautogui
-import webbrowser
 import os
-import logging
+import pyautogui
 import subprocess as sp
-# import pywhatkit
-# import wolframalpha
+import webbrowser
 import imdb
-import pprint
-# import requests
-from conv import random_text
-from multiprocessing.pool import ThreadPool
-from deco_rator import *
-from main import greet_me,take_command
+from datetime import datetime
+from random import choice
+from kivy.uix import widget, image, label, boxlayout, textinput
+from kivy import clock
+import threading
 
-from online import find_my_ip, youtube,search_on_google,search_on_wikipedia,send_email,get_news,weather_forecast
+from constants import SCREEN_HEIGHT, SCREEN_WIDTH, RANDOM_TEXT
+from jarvis_button import JarvisButton
+from utils import speak, youtube,search_on_google,search_on_wikipedia,send_email,get_news,weather_forecast
 
-# Set the width and height of the screen
-width, height = 1920, 1080
+class Jarvis(widget.Widget):
+    def __init__(self, **kwargs):
+        super(Jarvis, self).__init__(**kwargs)
+        self.volume = 0
+        self.volume_history = [0,0,0,0,0,0,0]
 
-# Print the width and height for verification
-print(width, height)
+        self.volume_history_size = 140
 
-# Configure the graphics settings
-Config.set('graphics', 'width', width)
-Config.set('graphics', 'height', height)
-Config.set('graphics', 'fullscreen', 'True')
+        self.min_size = .2 * SCREEN_WIDTH
+        self.max_size = .7 * SCREEN_WIDTH
+        
+        self.add_widget(image.Image(source='border.eps.png', size=(1920, 1080)))
+        self.circle = JarvisButton(size=(284.0, 284.0), background_normal='circle.png')
+        self.circle.bind(on_press=self.start_recording)
+        self.start_recording()
+        self.add_widget(image.Image(source='jarvis.gif', size=(self.min_size, self.min_size), pos=(SCREEN_WIDTH / 2 - self.min_size / 2, SCREEN_HEIGHT / 2 - self.min_size / 2)))
 
-# Get the configured screen width and height
-SCREEN_WIDTH = Config.getint('graphics', 'width')
-SCREEN_HEIGHT = Config.getint('graphics', 'height')
+        
+        time_layout = boxlayout.BoxLayout(orientation='vertical', pos=(150,900))
+        self.time_label = label.Label(text='', font_size=24, markup=True, font_name='mw.ttf')
+        time_layout.add_widget(self.time_label)
+        self.add_widget(time_layout)
 
-# Print the screen width and height for verification
-print(SCREEN_WIDTH, SCREEN_HEIGHT)
+        clock.Clock.schedule_interval(self.update_time, 1)
+        
+        self.title = label.Label(text='[b][color=3333ff]ERROR BY NIGHT[/color][/b]', font_size=42, markup=True, font_name='dusri.ttf', pos=(920, 900))
+        self.add_widget(self.title)
 
-engine = pyttsx3.init('sapi5')
+        self.subtitles_input = textinput.TextInput(
+            text='Hey Dhruv! I am Jarvis, your personal assistant.',
+            font_size=24,
+            readonly=True,
+            background_color=(0, 0, 0, 0),
+            foreground_color=(1, 1, 1, 1),
+            size_hint_y=None,
+            height=80,
+            pos=(720, 100),
+            width=1200,
+            font_name='teesri.otf',
+        )
+        self.add_widget(self.subtitles_input)
+        self.vrh =  label.Label(text='', font_size=30, markup=True, font_name='mw.ttf', pos=(1500, 500))
+        self.add_widget(self.vrh)
+        
+        self.vlh =  label.Label(text='', font_size=30, markup=True, font_name='mw.ttf', pos=(400, 500))
+        self.add_widget(self.vlh)
+        self.add_widget(self.circle)
+        # keyboard.on_press_key('`', self.on_keyboard_down)
 
-engine.setProperty('volume', 1.5)
-engine.setProperty('rate', 220)
-
-voices = engine.getProperty('voices')
-engine.setProperty('voice', voices[1].id)
-
-
-def speak(text):
-    engine.say(text)
-    engine.runAndWait()
-  
-@threaded      
-
-
-def take_command():
-    try:
+    def take_command(self):
         r = sr.Recognizer()
         with sr.Microphone() as source:
             print("Listening...")
@@ -80,97 +74,24 @@ def take_command():
             audio = r.listen(source)
 
         try:
+            print("Recognizing....")
             query = r.recognize_google(audio, language='en-in')
             print(query)
-            return query.lower()
-        except Exception as e:
-            print(e)
+            if 'stop' not in query or 'exit' in query:
+                speak(choice(RANDOM_TEXT))
+            else:
+                hour = datetime.now().hour
+                if hour >= 21 and hour < 6:
+                    speak("Good night sir,take care!")
+                else:
+                    speak("Have a good day sir!")
+                exit()
+
+        except Exception:
             speak("Sorry I couldn't understand. Can you please repeat that?")
-            return 'None'
-    except Exception as e:
-        logging.error(f"Error in take_command function: {e}")
-        speak("Sorry, there was an error. Please try again.")
-        return 'None'
-    
-    
+            query = 'None'
+        return query.lower()
 
-
-
-
-
-# Custom button class that rotates
-class RotatingButton(Button):
-
-    def __init__(self, **kwargs):
-        super(RotatingButton, self).__init__(**kwargs)
-        self.angle = 2  # By regulating angle, you can indirectly control the speed of rotation
-        self.background_angle = 0  # Angle for rotating only the background
-
-    def rotate_button(self, *args):
-        """
-        Rotate the button by updating the canvas rotation angle.
-        """
-        self.background_angle += self.angle
-        self.canvas.before.clear()
-        with self.canvas.before:
-            Rotate(angle=self.background_angle, origin=self.center)
-
-
-
-# Custom widget representing the circle
-class CircleWidget(Widget):
-
-    def __init__(self, **kwargs):
-        super(CircleWidget, self).__init__(**kwargs)
-        self.volume = 0
-        self.volume_history = [0,0,0,0,0,0,0]
-
-        # By increasing the size of volume_history_size, you can make the transition of size more smooth.
-        self.volume_history_size = 140
-
-        # Define relative minimal and maximal sizes for your circle
-        self.min_size = .2 * SCREEN_WIDTH
-        self.max_size = .7 * SCREEN_WIDTH
-        
-        # Create a rotating button representing the circle
-        self.add_widget(Image(source='border.eps.png', size=(1920, 1080)))
-        self.circle = RotatingButton(size=(284.0, 284.0), background_normal='circle.png')
-        self.circle.bind(on_press=self.start_recording)
-        # self.add_widget(Image(source='jarvis.gif', size=(self.min_size, self.min_size)))
-        self.add_widget(Image(source='jarvis.gif', size=(self.min_size, self.min_size), pos=(SCREEN_WIDTH / 2 - self.min_size / 2, SCREEN_HEIGHT / 2 - self.min_size / 2)))
-
-        # Create a label for displaying the spoken text
-        
-        time_layout = BoxLayout(orientation='vertical', pos=(150,900))
-        self.time_label = Label(text='', font_size=24, markup=True, font_name='mw.ttf')
-        time_layout.add_widget(self.time_label)
-        self.add_widget(time_layout)
-        # Schedule the update function for the time label
-        Clock.schedule_interval(self.update_time, 1)
-        
-        self.title = Label(text='[b][color=3333ff]ERROR BY NIGHT[/color][/b]', font_size=42, markup=True, font_name='dusri.ttf', pos=(920, 900))
-        self.add_widget(self.title)
-
-        self.subtitles_input = TextInput(
-            text='Hey Dhruv! I am Jarvis, your personal assistant.',
-            font_size=24,
-            readonly=True,
-            background_color=(0, 0, 0, 0),  # Set background color to be transparent
-            foreground_color=(1, 1, 1, 1),  # Set text color to be white
-            size_hint_y=None,
-            height=80,  # Set the height of the TextInput
-            pos=(720, 100),
-            width=1200,
-            font_name='teesri.otf',
-        )
-        self.add_widget(self.subtitles_input)
-        self.vrh =  Label(text='', font_size=30, markup=True, font_name='mw.ttf', pos=(1500, 500))
-        self.add_widget(self.vrh)
-        
-        self.vlh =  Label(text='', font_size=30, markup=True, font_name='mw.ttf', pos=(400, 500))
-        self.add_widget(self.vlh)
-        self.add_widget(self.circle)
-        keyboard.on_press_key('`', self.on_keyboard_down)
 
 
     def on_keyboard_down(self, event):
@@ -182,22 +103,24 @@ class CircleWidget(Widget):
   
 
     def start_recording(self, *args):
-        # Move the speech recognition logic to a separate thread
+        print('Recording started')
         threading.Thread(target=self.run_speech_recognition).start()
-        # multiprocessing.Process(target=self.run_speech_recognition).start()
+        print('Recording ended')
 
     def run_speech_recognition(self):
+        print('before speech rec obj')
         r = sr.Recognizer()
         with sr.Microphone() as source:
-            r.pause_threshold=1
-            audio = r.listen(source,timeout=None)
+            print("Listening...")
+            audio = r.listen(source)
+            print('audio recorded')
 
+        print('after speech rec obj')
         query = r.recognize_google(audio,language="en-in")
         # query = take_command()
         # Update the GUI from the main thread using Clock.schedule_once
-    
-        Clock.schedule_once(lambda dt: setattr(self.subtitles_input, 'text', query))
-        CircleWidget.handle_jarvis_commands(query.lower())
+        clock.Clock.schedule_once(lambda dt: setattr(self.subtitles_input, 'text', query))
+        self.handle_jarvis_commands(query.lower())
         return query.lower()
 
     
@@ -206,53 +129,48 @@ class CircleWidget(Widget):
         current_time = time.strftime('TIME\n\t%H:%M:%S')
         self.time_label.text = f'[b][color=3333ff]{current_time}[/color][/b]'
 
-    
-    
 
     def update_circle(self, dt):
         try:
             self.size_value = int(np.mean(self.volume_history))
-        except Exception as E:
+        except Exception as e:
             self.size_value = self.min_size
-            
-        
-        
-        # Ensure the size remains within the defined limits
+            print('WARNING: ', e)
+
         if self.size_value <= self.min_size:
             self.size_value = self.min_size
         elif self.size_value >= self.max_size:
             self.size_value = self.max_size
 
-        # Update the size and position of the circle button
         self.circle.size = (self.size_value, self.size_value)
         self.circle.pos = (SCREEN_WIDTH / 2 - self.circle.width / 2, SCREEN_HEIGHT / 2 - self.circle.height / 2)
 
 
     def update_volume(self, indata, frames, time, status):
-        volume_norm = np.linalg.norm(indata) * 100
+        volume_norm = np.linalg.norm(indata) * 200
         self.volume = volume_norm
         self.volume_history.append(volume_norm)
-        # self.vrh.text = f'[b][color=3333ff]{np.mean(self.volume_history)}[/color][/b]'
-        # self.vlh.text = f'[b][color=3333ff]{np.mean(self.volume_history)}[/color][/b]'
-        # self.vlh.text = f'''[b][color=3344ff]
-        #     {round(self.volume_history[0], 7)}\n
-        #     {round(self.volume_history[1], 7)}\n
-        #     {round(self.volume_history[2], 7)}\n
-        #     {round(self.volume_history[3], 7)}\n
-        #     {round(self.volume_history[4], 7)}\n
-        #     {round(self.volume_history[5], 7)}\n
-        #     {round(self.volume_history[6], 7)}\n
-        #     [/color][/b]'''
+        self.vrh.text = f'[b][color=3333ff]{np.mean(self.volume_history)}[/color][/b]'
+        self.vlh.text = f'[b][color=3333ff]{np.mean(self.volume_history)}[/color][/b]'
+        self.vlh.text = f'''[b][color=3344ff]
+            {round(self.volume_history[0], 7)}\n
+            {round(self.volume_history[1], 7)}\n
+            {round(self.volume_history[2], 7)}\n
+            {round(self.volume_history[3], 7)}\n
+            {round(self.volume_history[4], 7)}\n
+            {round(self.volume_history[5], 7)}\n
+            {round(self.volume_history[6], 7)}\n
+            [/color][/b]'''
         
-        # self.vrh.text = f'''[b][color=3344ff]
-        #     {round(self.volume_history[0], 7)}\n
-        #     {round(self.volume_history[1], 7)}\n
-        #     {round(self.volume_history[2], 7)}\n
-        #     {round(self.volume_history[3], 7)}\n
-        #     {round(self.volume_history[4], 7)}\n
-        #     {round(self.volume_history[5], 7)}\n
-        #     {round(self.volume_history[6], 7)}\n
-        #     [/color][/b]'''
+        self.vrh.text = f'''[b][color=3344ff]
+            {round(self.volume_history[0], 7)}\n
+            {round(self.volume_history[1], 7)}\n
+            {round(self.volume_history[2], 7)}\n
+            {round(self.volume_history[3], 7)}\n
+            {round(self.volume_history[4], 7)}\n
+            {round(self.volume_history[5], 7)}\n
+            {round(self.volume_history[6], 7)}\n
+            [/color][/b]'''
         # Keep the volume history within the defined size limit
         if len(self.volume_history) > self.volume_history_size:
             self.volume_history.pop(0)
@@ -262,7 +180,7 @@ class CircleWidget(Widget):
         self.stream = sd.InputStream(callback=self.update_volume)
         self.stream.start()
        
-    def handle_jarvis_commands(query):
+    def handle_jarvis_commands(self, query):
         try:
             if "how are you" in query:
                 speak("I am fine how are you.")
@@ -357,7 +275,7 @@ class CircleWidget(Widget):
 
             elif 'search on wikipedia' in query:
                         speak('What do you want to search on Wikipedia, sir?')        
-                        return_val = take_command().result_queue.get()
+                        return_val = self.take_command()
                         results = search_on_wikipedia(return_val)
                         speak(f"According to Wikipedia, {results}")
                         # speak("For your convenience, I am printing it on the screen sir.")
@@ -365,21 +283,21 @@ class CircleWidget(Widget):
 
             elif 'youtube' in query:
                         speak('What do you want to play on Youtube, sir?')
-                        video = take_command().result_queue.get()
+                        video = self.take_command()
                         youtube(video)
 
             elif 'search on google' in query:
                         speak('What do you want to search on Google, sir?')
-                        query = take_command().result_queue.get()
+                        query = self.take_command()
                         search_on_google(query)
 
             elif "send an email" in query:
                         speak("On what email address do I send sir? Please enter in the console: ")
                         receiver_address = input("Enter email address: ")
                         speak("What should be the subject sir?")
-                        subject = take_command().result_queue.get()
+                        subject = self.take_command()
                         speak("What is the message sir?")
-                        message = take_command().result_queue.get()
+                        message = self.take_command()
                         if send_email(receiver_address, subject, message):
                             speak("I've sent the email sir.")
                             print("I've sent the email sir.")
@@ -396,7 +314,7 @@ class CircleWidget(Widget):
             elif 'movie' in query:
                         movies_db = imdb.IMDb()
                         speak("please tell me the movie name :")
-                        text = take_command().result_queue.get()
+                        text = self.take_command()
                         movies = movies_db.search_movie(text)
                         speak("Searching for" + text)
                         speak("I Found these: ")
@@ -419,12 +337,12 @@ class CircleWidget(Widget):
 
             elif 'give me news' in query:
                         
-                        speak(f"I'm reading out the latest news hea`dlines, sir")
+                        speak("I'm reading out the latest news hea`dlines, sir")
                         speak(get_news())
                         
 
             elif 'weather' in query:
-                        ip_address = find_my_ip()
+                        # ip_address = find_my_ip()
                         city = 'indore'
                         speak(f"Getting weather report for your city {city}")
                         weather, temperature, feels_like = weather_forecast(city)
@@ -435,30 +353,3 @@ class CircleWidget(Widget):
            
         except Exception as e:
             print(e)
-        
-
-        
-# Custom Kivy App class
-class MyKivyApp(App):
-
-    def build(self):
-        # speak('Hey Dhruv I am Jarvis your personal assistant')
-        
-        circle_widget = CircleWidget()
-
-        # Start listening to the audio stream
-        circle_widget.start_listening()
-
-        # Schedule the update events for the circle widget
-        self.update_event = Clock.schedule_interval(circle_widget.update_circle, 1 / 60)
-        self.btn_rotation_event = Clock.schedule_interval(circle_widget.circle.rotate_button, 1 / 60)
-
-        return circle_widget
-        
-
-
-# Run the Kivy application
-if __name__ == '__main__':
-    MyKivyApp = MyKivyApp() 
-    MyKivyApp.run()
-    

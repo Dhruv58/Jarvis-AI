@@ -8,6 +8,6 @@ Run following commands on terminal
   - Windows
     - venv\Scripts\activate
   - Linux
-    - source venv/Scripts/activate.sh/fish (depending on your shell)
+    - source venv/Scripts/activate.(sh | fish) (depending on your shell)
 - pip install -r requirements.txt
 - python main.py

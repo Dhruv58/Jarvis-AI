@@ -18,6 +18,7 @@ from constants import SCREEN_HEIGHT, SCREEN_WIDTH, RANDOM_TEXT
 from jarvis_button import JarvisButton
 from utils import speak, youtube,search_on_google,search_on_wikipedia,send_email,get_news,weather_forecast
 
+
 class Jarvis(widget.Widget):
     def __init__(self, **kwargs):
         super(Jarvis, self).__init__(**kwargs)

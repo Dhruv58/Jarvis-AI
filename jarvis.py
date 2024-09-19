@@ -12,7 +12,6 @@ from datetime import datetime
 from random import choice
 from kivy.uix import widget, image, label, boxlayout, textinput
 from kivy import clock
-import threading
 
 from constants import SCREEN_HEIGHT, SCREEN_WIDTH, RANDOM_TEXT
 from jarvis_button import JarvisButton

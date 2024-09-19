@@ -30,21 +30,21 @@ class Jarvis(widget.Widget):
         self.min_size = .2 * SCREEN_WIDTH
         self.max_size = .7 * SCREEN_WIDTH
         
-        self.add_widget(image.Image(source='border.eps.png', size=(1920, 1080)))
-        self.circle = JarvisButton(size=(284.0, 284.0), background_normal='circle.png')
+        self.add_widget(image.Image(source='static/border.eps.png', size=(1920, 1080)))
+        self.circle = JarvisButton(size=(284.0, 284.0), background_normal='static/circle.png')
         self.circle.bind(on_press=self.start_recording)
         self.start_recording()
-        self.add_widget(image.Image(source='jarvis.gif', size=(self.min_size, self.min_size), pos=(SCREEN_WIDTH / 2 - self.min_size / 2, SCREEN_HEIGHT / 2 - self.min_size / 2)))
+        self.add_widget(image.Image(source='static/jarvis.gif', size=(self.min_size, self.min_size), pos=(SCREEN_WIDTH / 2 - self.min_size / 2, SCREEN_HEIGHT / 2 - self.min_size / 2)))
 
         
         time_layout = boxlayout.BoxLayout(orientation='vertical', pos=(150,900))
-        self.time_label = label.Label(text='', font_size=24, markup=True, font_name='mw.ttf')
+        self.time_label = label.Label(text='', font_size=24, markup=True, font_name='static/mw.ttf')
         time_layout.add_widget(self.time_label)
         self.add_widget(time_layout)
 
         clock.Clock.schedule_interval(self.update_time, 1)
         
-        self.title = label.Label(text='[b][color=3333ff]ERROR BY NIGHT[/color][/b]', font_size=42, markup=True, font_name='dusri.ttf', pos=(920, 900))
+        self.title = label.Label(text='[b][color=3333ff]ERROR BY NIGHT[/color][/b]', font_size=42, markup=True, font_name='static/dusri.ttf', pos=(920, 900))
         self.add_widget(self.title)
 
         self.subtitles_input = textinput.TextInput(
@@ -57,13 +57,13 @@ class Jarvis(widget.Widget):
             height=80,
             pos=(720, 100),
             width=1200,
-            font_name='teesri.otf',
+            font_name='static/teesri.otf',
         )
         self.add_widget(self.subtitles_input)
-        self.vrh =  label.Label(text='', font_size=30, markup=True, font_name='mw.ttf', pos=(1500, 500))
+        self.vrh =  label.Label(text='', font_size=30, markup=True, font_name='static/mw.ttf', pos=(1500, 500))
         self.add_widget(self.vrh)
         
-        self.vlh =  label.Label(text='', font_size=30, markup=True, font_name='mw.ttf', pos=(400, 500))
+        self.vlh =  label.Label(text='', font_size=30, markup=True, font_name='static/mw.ttf', pos=(400, 500))
         self.add_widget(self.vlh)
         self.add_widget(self.circle)
         # keyboard.on_press_key('`', self.on_keyboard_down)
@@ -133,8 +133,10 @@ class Jarvis(widget.Widget):
 
 
     def update_circle(self, dt):
+        print('UPDATING CIRLC ESIEZ ')
         try:
             self.size_value = int(np.mean(self.volume_history))
+            print('SIZE VALUE: ', self.size_value)
         except Exception as e:
             self.size_value = self.min_size
             print('WARNING: ', e)
@@ -143,7 +145,6 @@ class Jarvis(widget.Widget):
             self.size_value = self.min_size
         elif self.size_value >= self.max_size:
             self.size_value = self.max_size
-
         self.circle.size = (self.size_value, self.size_value)
         self.circle.pos = (SCREEN_WIDTH / 2 - self.circle.width / 2, SCREEN_HEIGHT / 2 - self.circle.height / 2)
 

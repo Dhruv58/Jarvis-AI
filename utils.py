@@ -17,10 +17,15 @@ from constants import (
     NEWS_FETCH_API_KEY,
     WEATHER_FORECAST_API_KEY,
 )
+from pydub import AudioSegment
 
 def speak(text):
     tts = gtts.gTTS(text, lang="en")
     tts.save("output.mp3")
+    audio = AudioSegment.from_file("output.mp3")
+    os.remove("output.mp3")
+    audio = audio.speedup(playback_speed=1.5)
+    audio.export('output.mp3', format='mp3')
     playsound.playsound("output.mp3")
     os.remove("output.mp3")
 

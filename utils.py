@@ -1,7 +1,7 @@
-import gtts
-import playsound
+import gtts 
+import playsound 
 import os
-import requests
+import requests 
 import wikipedia
 import pywhatkit as kit
 from email.message import EmailMessage

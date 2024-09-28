@@ -12,11 +12,13 @@ from datetime import datetime
 from random import choice
 from kivy.uix import widget, image, label, boxlayout, textinput
 from kivy import clock
-
+import google.generativeai as genai
 from constants import SCREEN_HEIGHT, SCREEN_WIDTH, RANDOM_TEXT
 from jarvis_button import JarvisButton
 from utils import speak, youtube,search_on_google,search_on_wikipedia,send_email,get_news,weather_forecast
 
+GEMINI_API_KEY = "YOUR_GEMINI_API_KEY"  # Replace with your actual API key
+genai.configure(api_key=GEMINI_API_KEY)
 
 class Jarvis(widget.Widget):
     def __init__(self, **kwargs):
@@ -95,12 +97,12 @@ class Jarvis(widget.Widget):
 
 
 
-    def on_keyboard_down(self, event):
-        # Check if the pressed key is '`'
-        print(event.name)
-        if event.name == '`':
-            # Call the start_recording function
-            self.start_recording()
+    # def on_keyboard_down(self, event):
+    #     # Check if the pressed key is '`'
+    #     print(event.name)
+    #     if event.name == '`':
+    #         # Call the start_recording function
+    #         self.start_recording()
   
 
     def start_recording(self, *args):
@@ -132,7 +134,7 @@ class Jarvis(widget.Widget):
 
 
     def update_circle(self, dt):
-        print('UPDATING CIRLC ESIEZ ')
+        
         try:
             self.size_value = int(np.mean(self.volume_history))
             print('SIZE VALUE: ', self.size_value)

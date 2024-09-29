@@ -17,8 +17,6 @@ from constants import SCREEN_HEIGHT, SCREEN_WIDTH, RANDOM_TEXT
 from jarvis_button import JarvisButton
 from utils import speak, youtube,search_on_google,search_on_wikipedia,send_email,get_news,weather_forecast
 
-GEMINI_API_KEY = "YOUR_GEMINI_API_KEY"  # Replace with your actual API key
-genai.configure(api_key=GEMINI_API_KEY)
 
 class Jarvis(widget.Widget):
     def __init__(self, **kwargs):
@@ -354,6 +352,11 @@ class Jarvis(widget.Widget):
                         speak(f"Also, the weather report talks about {weather}")
                         speak("For your convenience, I am printing it on the screen sir.")
                         print(f"Description: {weather}\nTemperature: {temperature}\nFeels like: {feels_like}")
-           
+            
+            # else:
+            #     # If no specific command is recognized, use Gemini for a response
+            #     response = generate_response(query)
+            #     speak(response)
+            #     print(response)
         except Exception as e:
             print(e)

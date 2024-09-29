@@ -353,10 +353,6 @@ class Jarvis(widget.Widget):
                         speak("For your convenience, I am printing it on the screen sir.")
                         print(f"Description: {weather}\nTemperature: {temperature}\nFeels like: {feels_like}")
             
-            # else:
-            #     # If no specific command is recognized, use Gemini for a response
-            #     response = generate_response(query)
-            #     speak(response)
-            #     print(response)
+            
         except Exception as e:
             print(e)

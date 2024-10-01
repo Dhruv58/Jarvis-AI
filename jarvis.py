@@ -16,7 +16,10 @@ import google.generativeai as genai
 from constants import SCREEN_HEIGHT, SCREEN_WIDTH, RANDOM_TEXT
 from jarvis_button import JarvisButton
 from utils import speak, youtube,search_on_google,search_on_wikipedia,send_email,get_news,weather_forecast
+# from pydub import AudioSegment
 
+
+# genai.configure(api_key='AIzaSyCMiI0nkQa8okAjHVL-FWHg-Xb6Am1D8ag')  # Replace with your actual API key
 
 class Jarvis(widget.Widget):
     def __init__(self, **kwargs):
@@ -65,6 +68,8 @@ class Jarvis(widget.Widget):
         self.vlh =  label.Label(text='', font_size=30, markup=True, font_name='static/mw.ttf', pos=(400, 500))
         self.add_widget(self.vlh)
         self.add_widget(self.circle)
+        
+        # self.model = genai.GenerativeModel('gemini-pro') 
         # keyboard.on_press_key('`', self.on_keyboard_down)
 
     def take_command(self):
@@ -275,13 +280,13 @@ class Jarvis(widget.Widget):
         #                 f'Your IP Address is {ip_address}.\n For your convenience, I am printing it on the screen sir.')
         #             print(f'Your IP Address is {ip_address}')
 
-            elif 'search on wikipedia' in query:
-                        speak('What do you want to search on Wikipedia, sir?')        
-                        return_val = self.take_command()
-                        results = search_on_wikipedia(return_val)
-                        speak(f"According to Wikipedia, {results}")
-                        # speak("For your convenience, I am printing it on the screen sir.")
-                        # print(results)
+            # elif 'search on wikipedia' in query:
+            #             context = "You are Jarvis, an AI assistant. The user wants to search for information on Wikipedia. Ask what they want to search for and provide a response based on the Wikipedia results."
+            #             response = self.generate_gemini_response(query, context)
+            #             speak(response)
+            #             search_query = self.take_command()
+            #             results = search_on_wikipedia(search_query)
+            #             speak(f"According to Wikipedia, {results}")
 
             elif 'youtube' in query:
                         speak('What do you want to play on Youtube, sir?')
@@ -353,6 +358,19 @@ class Jarvis(widget.Widget):
                         speak("For your convenience, I am printing it on the screen sir.")
                         print(f"Description: {weather}\nTemperature: {temperature}\nFeels like: {feels_like}")
             
+            # else:
+            #     # If no specific command is recognized, use Gemini to generate a response
+            #     response = self.generate_gemini_response(query)
+            #     speak(response)
+            #     self.subtitles_input.text = response
             
         except Exception as e:
             print(e)
+        
+    # def generate_gemini_response(self, query):
+        # try:
+        #     response = self.model.generate_content(query)
+        #     return response.text
+        # except Exception as e:
+        #     print(f"Error generating response from Gemini: {e}")
+        #     return "I'm sorry, I couldn't generate a response at the moment."        

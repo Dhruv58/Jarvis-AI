@@ -18,6 +18,8 @@ from constants import (
     WEATHER_FORECAST_API_KEY,
 )
 from pydub import AudioSegment
+from gtts import gTTS
+from pydub.playback import play
 
 def speak(text):
     tts = gtts.gTTS(text, lang="en")
@@ -28,6 +30,7 @@ def speak(text):
     audio.export('output.mp3', format='mp3')
     playsound.playsound("output.mp3")
     os.remove("output.mp3")
+    
 
 def find_my_ip():
     ip_address = requests.get(IP_ADDR_API_URL, params={"format": "json"}).json()

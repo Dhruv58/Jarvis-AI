@@ -1,7 +1,5 @@
-import gtts 
-import playsound 
-import os
-import requests 
+import pyttsx3
+import requests
 import wikipedia
 import pywhatkit as kit
 from email.message import EmailMessage
@@ -17,51 +15,57 @@ from constants import (
     NEWS_FETCH_API_KEY,
     WEATHER_FORECAST_API_KEY,
 )
-from pydub import AudioSegment
-from gtts import gTTS
-from pydub.playback import play
+
+engine = pyttsx3.init()
+engine.setProperty("volume", 1.0)
+engine.setProperty("rate", 200)
+
+voices = engine.getProperty("voices")
+engine.setProperty("voice", voices[1].id)
+
 
 def speak(text):
-    tts = gtts.gTTS(text, lang="en")
-    tts.save("output.mp3")
-    audio = AudioSegment.from_file("output.mp3")
-    os.remove("output.mp3")
-    audio = audio.speedup(playback_speed=1.5)
-    audio.export('output.mp3', format='mp3')
-    playsound.playsound("output.mp3")
-    os.remove("output.mp3")
-    
+    engine.say(text)
+    engine.runAndWait()
+
 
 def find_my_ip():
     ip_address = requests.get(IP_ADDR_API_URL, params={"format": "json"}).json()
     return ip_address["ip"]
 
+
 def search_on_wikipedia(query):
     results = wikipedia.summary(query, sentences=2)
     return results
 
+
 def search_on_google(query):
     kit.search(query)
 
+
 def youtube(video):
     kit.playonyt(video)
+
 
 def send_email(receiver_add, subject, message):
     try:
         email = EmailMessage()
         email["To"] = receiver_add
         email["Subject"] = subject
-        email["From"] = EMAIL 
+        email["From"] = EMAIL
+
         email.set_content(message)
         s = smtplib.SMTP(SMTP_URL, SMTP_PORT)
         s.starttls()
         s.login(EMAIL, PASSWORD)
         s.send_message(email)
         s.close()
-        return True 
+        return True
+
     except Exception as e:
         print(e)
         return False
+
 
 def get_news():
     news_headline = []
@@ -77,6 +81,7 @@ def get_news():
     for article in articles:
         news_headline.append(article["title"])
     return news_headline[:6]
+
 
 def weather_forecast(city):
     res = requests.get(

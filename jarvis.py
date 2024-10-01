@@ -20,7 +20,6 @@ from utils import speak, youtube,search_on_google,search_on_wikipedia,send_email
 
 
 
-
 class Jarvis(widget.Widget):
     def __init__(self, **kwargs):
         super(Jarvis, self).__init__(**kwargs)

@@ -19,7 +19,7 @@ from utils import speak, youtube,search_on_google,search_on_wikipedia,send_email
 # from pydub import AudioSegment
 
 
-# genai.configure(api_key='AIzaSyCMiI0nkQa8okAjHVL-FWHg-Xb6Am1D8ag')  # Replace with your actual API key
+
 
 class Jarvis(widget.Widget):
     def __init__(self, **kwargs):

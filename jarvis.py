@@ -17,6 +17,11 @@ from constants import SCREEN_HEIGHT, SCREEN_WIDTH, RANDOM_TEXT
 from jarvis_button import JarvisButton
 from utils import speak, youtube,search_on_google,search_on_wikipedia,send_email,get_news,weather_forecast
 
+import google.generativeai as genai
+
+# Configure the Gemini API
+genai.configure(api_key='AIzaSyBDBX8hP6QXMDwruEARlopcEck23VpjlDo')
+model = genai.GenerativeModel('gemini-pro')
 
 class Jarvis(widget.Widget):
     def __init__(self, **kwargs):
@@ -79,11 +84,12 @@ class Jarvis(widget.Widget):
             query = r.recognize_google(audio, language='en-in')
             print(query)
             if 'stop' not in query or 'exit' in query:
-                speak(choice(RANDOM_TEXT))
+                response = self.get_gemini_response(query)
+                speak(response)
             else:
                 hour = datetime.now().hour
                 if hour >= 21 and hour < 6:
-                    speak("Good night sir,take care!")
+                    speak("Good night sir, take care!")
                 else:
                     speak("Have a good day sir!")
                 exit()
@@ -117,14 +123,25 @@ class Jarvis(widget.Widget):
             print('audio recorded')
 
         print('after speech rec obj')
-        query = r.recognize_google(audio,language="en-in")
-        # query = take_command()
+        try:
+            query = r.recognize_google(audio, language="en-in")
+            print(f"Recognized: {query}")
         # Update the GUI from the main thread using Clock.schedule_once
-        clock.Clock.schedule_once(lambda dt: setattr(self.subtitles_input, 'text', query))
-        self.handle_jarvis_commands(query.lower())
-        return query.lower()
+            clock.Clock.schedule_once(lambda dt: setattr(self.subtitles_input, 'text', query))
+            self.handle_jarvis_commands(query.lower())
+        except sr.UnknownValueError:
+            print("Google Speech Recognition could not understand audio")
+        except sr.RequestError as e:
+            print(f"Could not request results from Google Speech Recognition service; {e}")
+        return query.lower() 
 
-    
+    def get_gemini_response(self, query):
+        try:
+            response = model.generate_content(query)
+            return response.text
+        except Exception as e:
+            print(f"Error getting Gemini response: {e}")
+            return "I'm sorry, I couldn't process that request."
     
     def update_time(self, dt):
         current_time = time.strftime('TIME\n\t%H:%M:%S')
@@ -132,10 +149,10 @@ class Jarvis(widget.Widget):
 
 
     def update_circle(self, dt):
-        print('UPDATING CIRLC ESIEZ ')
+        # print('UPDATING CIRLC ESIEZ ')
         try:
             self.size_value = int(np.mean(self.volume_history))
-            print('SIZE VALUE: ', self.size_value)
+            # print('SIZE VALUE: ', self.size_value)
         except Exception as e:
             self.size_value = self.min_size
             print('WARNING: ', e)
@@ -184,6 +201,12 @@ class Jarvis(widget.Widget):
        
     def handle_jarvis_commands(self, query):
         try:
+            
+            gemini_response = self.get_gemini_response(query)
+            if gemini_response and gemini_response != "I'm sorry, I couldn't process that request.":
+                speak(gemini_response)
+                return
+            
             if "how are you" in query:
                 speak("I am fine how are you.")
         
@@ -306,12 +329,7 @@ class Jarvis(widget.Widget):
                         else:
                             speak("Something went wrong while I was sending the mail. Please check the error logs sir.")
 
-        # elif 'tell me any joke' in query:
-        #             speak(f"Hope you like this one sir")
-        #             joke = get_random_joke()
-        #             speak(joke)
-        #             speak("For your convenience, I am printing it on the screen sir.")
-        #             pprint(joke)
+        
 
             elif 'movie' in query:
                         movies_db = imdb.IMDb()
@@ -343,15 +361,13 @@ class Jarvis(widget.Widget):
                         speak(get_news())
                         
 
-            elif 'weather' in query:
-                        # ip_address = find_my_ip()
-                        city = 'indore'
-                        speak(f"Getting weather report for your city {city}")
-                        weather, temperature, feels_like = weather_forecast(city)
-                        speak(f"The current temperature is {temperature}, but it feels like {feels_like}")
-                        speak(f"Also, the weather report talks about {weather}")
-                        speak("For your convenience, I am printing it on the screen sir.")
-                        print(f"Description: {weather}\nTemperature: {temperature}\nFeels like: {feels_like}")
-           
+            elif 'weather' in query.lower():
+                city = 'indore'  # You might want to make this dynamic
+                weather, temperature, feels_like = weather_forecast(city)
+                speak(f"The current temperature in {city} is {temperature}, but it feels like {feels_like}. The weather is {weather}.")
+            
+            else:
+                speak(gemini_response)
+            
         except Exception as e:
             print(e)

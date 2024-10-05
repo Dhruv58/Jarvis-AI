@@ -20,7 +20,7 @@ from utils import speak, youtube,search_on_google,search_on_wikipedia,send_email
 import google.generativeai as genai
 
 # Configure the Gemini API
-genai.configure(api_key='AIzaSyBDBX8hP6QXMDwruEARlopcEck23VpjlDo')
+genai.configure(api_key='')
 model = genai.GenerativeModel('gemini-pro')
 
 class Jarvis(widget.Widget):

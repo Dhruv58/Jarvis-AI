@@ -15,13 +15,13 @@ from kivy import clock
 
 from constants import SCREEN_HEIGHT, SCREEN_WIDTH, RANDOM_TEXT
 from jarvis_button import JarvisButton
-from utils import speak, youtube,search_on_google,search_on_wikipedia,send_email,get_news,weather_forecast
+from utils import speak, youtube,search_on_google,search_on_wikipedia,send_email,get_news,weather_forecast,find_my_ip
 
 import google.generativeai as genai
 
 # Configure the Gemini API
-genai.configure(api_key='')
-model = genai.GenerativeModel('gemini-pro')
+genai.configure(api_key='AIzaSyBDBX8hP6QXMDwruEARlopcEck23VpjlDo')
+model = genai.GenerativeModel('gemini-1.5-flash')
 
 class Jarvis(widget.Widget):
     def __init__(self, **kwargs):
@@ -203,9 +203,7 @@ class Jarvis(widget.Widget):
         try:
             
             gemini_response = self.get_gemini_response(query)
-            if gemini_response and gemini_response != "I'm sorry, I couldn't process that request.":
-                speak(gemini_response)
-                return
+             
             
             if "how are you" in query:
                 speak("I am fine how are you.")
@@ -292,11 +290,11 @@ class Jarvis(widget.Widget):
         #             except StopIteration:
         #                 speak("I couldn't find that. Please try again.")
 
-        # elif 'ip address' in query:
-        #             ip_address = find_my_ip()
-        #             speak(
-        #                 f'Your IP Address is {ip_address}.\n For your convenience, I am printing it on the screen sir.')
-        #             print(f'Your IP Address is {ip_address}')
+            elif 'ip address' in query:
+                    ip_address = find_my_ip()
+                    speak(
+                        f'Your IP Address is {ip_address}.\n For your convenience, I am printing it on the screen sir.')
+                    print(f'Your IP Address is {ip_address}')
 
             elif 'search on wikipedia' in query:
                         speak('What do you want to search on Wikipedia, sir?')        
@@ -357,17 +355,25 @@ class Jarvis(widget.Widget):
 
             elif 'give me news' in query:
                         
-                        speak("I'm reading out the latest news hea`dlines, sir")
+                        speak("I'm reading out the latest news headlines, sir")
                         speak(get_news())
                         
 
             elif 'weather' in query.lower():
-                city = 'indore'  # You might want to make this dynamic
-                weather, temperature, feels_like = weather_forecast(city)
-                speak(f"The current temperature in {city} is {temperature}, but it feels like {feels_like}. The weather is {weather}.")
+                ip_address = find_my_ip()
+                speak("tell me the name of your city")
+                city = input("Enter name of your city")
+                speak(f"Getting weather report for your city {city}")
+                weather, temp, feels_like = weather_forecast(city)
+                speak(f"The current temperature is {temp}, but it feels like {feels_like}")
+                speak(f"Also, the weather report talks about {weather}")
+                speak("For your convenience, I am printing it on the screen sir.")
+                print(f"Description: {weather}\nTemperature: {temp}\nFeels like: {feels_like}")
             
-            else:
+            elif gemini_response and gemini_response != "I'm sorry, I couldn't process that request.":
                 speak(gemini_response)
+                return
+                # speak(gemini_response)
             
         except Exception as e:
             print(e)

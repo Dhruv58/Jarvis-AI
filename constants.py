@@ -1,7 +1,6 @@
 import os
 from kivy.config import Config 
-from dotenv import load_dotenv
-load_dotenv("env/.env")
+
 
 width, height = 1920, 1080
 

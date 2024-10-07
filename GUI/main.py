@@ -13,8 +13,8 @@ import time
 from datetime import datetime
 from decouple import config
 from random import choice
-from constants import random_text
-from utils import find_my_ip, search_on_google, search_on_wikipedia, youtube, send_email, get_news, weather_forecast
+from const import random_text
+from online import find_my_ip, search_on_google, search_on_wikipedia, youtube, send_email, get_news, weather_forecast
 
 engine = pyttsx3.init()
 engine.setProperty('volume', 1.5)

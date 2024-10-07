@@ -12,7 +12,7 @@ from datetime import datetime
 from random import choice
 from kivy.uix import widget, image, label, boxlayout, textinput
 from kivy import clock
-
+import re
 from constants import SCREEN_HEIGHT, SCREEN_WIDTH, RANDOM_TEXT
 from jarvis_button import JarvisButton
 from utils import speak, youtube,search_on_google,search_on_wikipedia,send_email,get_news,weather_forecast,find_my_ip
@@ -143,6 +143,22 @@ class Jarvis(widget.Widget):
             print(f"Error getting Gemini response: {e}")
             return "I'm sorry, I couldn't process that request."
     
+    def clean_text_for_speech(text):
+    # Remove Markdown formatting
+        text = re.sub(r'\*\*?(.*?)\*\*?', r'\1', text)  # Remove bold and italic
+        text = re.sub(r'`(.*?)`', r'\1', text)  # Remove code backticks
+        text = re.sub(r'\[(.*?)\]\(.*?\)', r'\1', text)  # Remove links, keep text
+    
+    # Remove or replace other symbols
+        text = text.replace('*', '')
+        text = text.replace('#', 'hashtag ')
+        text = text.replace('&', 'and')
+        text = re.sub(r'[_\-~]', ' ', text)  # Replace underscores, hyphens, and tildes with spaces
+    
+    # Remove extra whitespace
+        text = re.sub(r'\s+', ' ', text).strip()
+        return text
+    
     def update_time(self, dt):
         current_time = time.strftime('TIME\n\t%H:%M:%S')
         self.time_label.text = f'[b][color=3333ff]{current_time}[/color][/b]'
@@ -202,7 +218,7 @@ class Jarvis(widget.Widget):
     def handle_jarvis_commands(self, query):
         try:
             
-            gemini_response = self.get_gemini_response(query)
+            
              
             
             if "how are you" in query:
@@ -370,10 +386,12 @@ class Jarvis(widget.Widget):
                 speak("For your convenience, I am printing it on the screen sir.")
                 print(f"Description: {weather}\nTemperature: {temp}\nFeels like: {feels_like}")
             
-            elif gemini_response and gemini_response != "I'm sorry, I couldn't process that request.":
-                speak(gemini_response)
-                return
-                # speak(gemini_response)
+            else:
+                gemini_response = self.get_gemini_response(query)
+                if gemini_response and gemini_response != "I'm sorry, I couldn't process that request.":
+                    speak(gemini_response).replace("*"," ")
+                    print(gemini_response)
+                
             
         except Exception as e:
             print(e)

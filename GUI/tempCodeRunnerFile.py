@@ -1,1 +1,0 @@
-r.pause_threshold=1

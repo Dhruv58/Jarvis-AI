@@ -1,10 +1,10 @@
 import gtts
-import playsound
 import os
 import requests
 import wikipedia
 import pywhatkit as kit
 from email.message import EmailMessage
+from decouple import config
 import smtplib
 from constants import (
     EMAIL,

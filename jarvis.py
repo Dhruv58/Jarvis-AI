@@ -1,5 +1,6 @@
 import time
 import threading
+import keyboard
 import numpy as np
 import sounddevice as sd
 import speech_recognition as sr
@@ -9,18 +10,15 @@ import subprocess as sp
 import webbrowser
 import imdb
 from datetime import datetime
-from random import choice
 from kivy.uix import widget, image, label, boxlayout, textinput
 from kivy import clock
-import re
-from constants import SCREEN_HEIGHT, SCREEN_WIDTH, RANDOM_TEXT
-from jarvis_button import JarvisButton
+from constants import SCREEN_HEIGHT, SCREEN_WIDTH, RANDOM_TEXT,GEMINI_API
 from utils import speak, youtube,search_on_google,search_on_wikipedia,send_email,get_news,weather_forecast,find_my_ip
-
+from jarvis_button import JarvisButton
 import google.generativeai as genai
 
 # Configure the Gemini API
-genai.configure(api_key='AIzaSyBDBX8hP6QXMDwruEARlopcEck23VpjlDo')
+genai.configure(api_key=GEMINI_API)
 model = genai.GenerativeModel('gemini-1.5-flash')
 
 class Jarvis(widget.Widget):
@@ -71,6 +69,7 @@ class Jarvis(widget.Widget):
         self.add_widget(self.vlh)
         self.add_widget(self.circle)
         # keyboard.on_press_key('`', self.on_keyboard_down)
+        keyboard.add_hotkey('`', self.start_recording)
 
     def take_command(self):
         r = sr.Recognizer()
@@ -82,32 +81,12 @@ class Jarvis(widget.Widget):
         try:
             print("Recognizing....")
             query = r.recognize_google(audio, language='en-in')
-            print(query)
-            if 'stop' not in query or 'exit' in query:
-                response = self.get_gemini_response(query)
-                speak(response)
-            else:
-                hour = datetime.now().hour
-                if hour >= 21 and hour < 6:
-                    speak("Good night sir, take care!")
-                else:
-                    speak("Have a good day sir!")
-                exit()
-
+            return query.lower()
+        
         except Exception:
             speak("Sorry I couldn't understand. Can you please repeat that?")
             query = 'None'
-        return query.lower()
-
-
-
-    def on_keyboard_down(self, event):
-        # Check if the pressed key is '`'
-        print(event.name)
-        if event.name == '`':
-            # Call the start_recording function
-            self.start_recording()
-  
+        
 
     def start_recording(self, *args):
         print('Recording started')
@@ -142,22 +121,6 @@ class Jarvis(widget.Widget):
         except Exception as e:
             print(f"Error getting Gemini response: {e}")
             return "I'm sorry, I couldn't process that request."
-    
-    def clean_text_for_speech(text):
-    # Remove Markdown formatting
-        text = re.sub(r'\*\*?(.*?)\*\*?', r'\1', text)  # Remove bold and italic
-        text = re.sub(r'`(.*?)`', r'\1', text)  # Remove code backticks
-        text = re.sub(r'\[(.*?)\]\(.*?\)', r'\1', text)  # Remove links, keep text
-    
-    # Remove or replace other symbols
-        text = text.replace('*', '')
-        text = text.replace('#', 'hashtag ')
-        text = text.replace('&', 'and')
-        text = re.sub(r'[_\-~]', ' ', text)  # Replace underscores, hyphens, and tildes with spaces
-    
-    # Remove extra whitespace
-        text = re.sub(r'\s+', ' ', text).strip()
-        return text
     
     def update_time(self, dt):
         current_time = time.strftime('TIME\n\t%H:%M:%S')
@@ -217,9 +180,6 @@ class Jarvis(widget.Widget):
        
     def handle_jarvis_commands(self, query):
         try:
-            
-            
-             
             
             if "how are you" in query:
                 speak("I am fine how are you.")
@@ -343,8 +303,6 @@ class Jarvis(widget.Widget):
                         else:
                             speak("Something went wrong while I was sending the mail. Please check the error logs sir.")
 
-        
-
             elif 'movie' in query:
                         movies_db = imdb.IMDb()
                         speak("please tell me the movie name :")
@@ -388,8 +346,9 @@ class Jarvis(widget.Widget):
             
             else:
                 gemini_response = self.get_gemini_response(query)
+                gemini_response = gemini_response.replace("*","")
                 if gemini_response and gemini_response != "I'm sorry, I couldn't process that request.":
-                    speak(gemini_response).replace("*"," ")
+                    speak(gemini_response)
                     print(gemini_response)
                 
             

@@ -1,8 +1,9 @@
 from dotenv import load_dotenv
 load_dotenv()
 from kivy import app, clock
-from jarvis import Jarvis
 
+from jarvis import Jarvis
+ 
 
 class MyKivyApp(app.App):
 

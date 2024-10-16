@@ -57,8 +57,8 @@ def pause_listening():
     print("stopped listening")
 
 
-# keyboard.add_hotkey('ctrl+alt+k', start_listening)
-# keyboard.add_hotkey('ctrl+alt+p', pause_listening)
+keyboard.add_hotkey('ctrl+alt+k', start_listening)
+keyboard.add_hotkey('ctrl+alt+p', pause_listening)
 
 
 def take_command():

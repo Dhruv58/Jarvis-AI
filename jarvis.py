@@ -9,7 +9,6 @@ import pyautogui
 import subprocess as sp
 import webbrowser
 import imdb
-from datetime import datetime
 from kivy.uix import widget, image, label, boxlayout, textinput
 from kivy import clock
 from constants import SCREEN_HEIGHT, SCREEN_WIDTH, RANDOM_TEXT,GEMINI_API
@@ -18,8 +17,8 @@ from jarvis_button import JarvisButton
 import google.generativeai as genai
 
 # Configure the Gemini API
-genai.configure(api_key=GEMINI_API)
-model = genai.GenerativeModel('gemini-1.5-flash')
+genai.configure(api_key='AIzaSyAN88my5PXgphFsuFVJusu-hJQY1WYa4_4')
+model = genai.GenerativeModel('gemini-1')
 
 class Jarvis(widget.Widget):
     def __init__(self, **kwargs):
@@ -233,38 +232,6 @@ class Jarvis(widget.Widget):
                 speak("turn on all notifications")
                 pyautogui.click(x=1750, y=320, clicks=1, interval=0, button='left')
 
-        # elif 'calculate' in query:
-        #             app_id = ""
-        #             client = wolframalpha.Client(app_id)
-        #             ind = query.lower().split().index("calculate")
-        #             text = query.split()[ind + 1:]
-        #             res = client.query(" ".join(text))
-        #             try:
-        #                 ans = next(res.results).text
-        #                 speak("The answer is " + ans)
-        #                 print("the answer is " + ans)
-        #             except StopIteration:
-        #                 speak("I couldn't calculate that. Please try again.")
-
-        # elif 'what is' in query or 'who is' in query or 'which is' in query or 'where did ' in query:
-        #             app_id = ""  # Replace with your actual Wolfram Alpha App ID
-        #             client = wolframalpha.Client(app_id)
-        #             try:
-
-        #                 ind = query.lower().index('what is') if 'what is' in query.lower() else \
-        #                     query.lower().index('who is') if 'who is' in query.lower() else \
-        #                         query.lower().index('which is') if 'which is' in query.lower() else None
-
-        #                 if ind is not None:
-        #                     text = query.split()[ind + 2:]
-        #                     res = client.query(" ".join(text))
-        #                     ans = next(res.results).text
-        #                     speak("The answer is " + ans)
-        #                     print("The answer is " + ans)
-        #                 else:
-        #                     speak("I couldn't find that. Please try again.")
-        #             except StopIteration:
-        #                 speak("I couldn't find that. Please try again.")
 
             elif 'ip address' in query:
                     ip_address = find_my_ip()

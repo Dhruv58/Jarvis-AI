@@ -1,5 +1,6 @@
 import time
 import threading
+import keyboard
 import numpy as np
 import sounddevice as sd
 import speech_recognition as sr
@@ -8,20 +9,16 @@ import pyautogui
 import subprocess as sp
 import webbrowser
 import imdb
-from datetime import datetime
-from random import choice
 from kivy.uix import widget, image, label, boxlayout, textinput
 from kivy import clock
-
-from constants import SCREEN_HEIGHT, SCREEN_WIDTH, RANDOM_TEXT
-from jarvis_button import JarvisButton
+from constants import SCREEN_HEIGHT, SCREEN_WIDTH, RANDOM_TEXT,GEMINI_API
 from utils import speak, youtube,search_on_google,search_on_wikipedia,send_email,get_news,weather_forecast,find_my_ip
-
+from jarvis_button import JarvisButton
 import google.generativeai as genai
 
 # Configure the Gemini API
-genai.configure(api_key='AIzaSyBDBX8hP6QXMDwruEARlopcEck23VpjlDo')
-model = genai.GenerativeModel('gemini-1.5-flash')
+genai.configure(api_key='AIzaSyAN88my5PXgphFsuFVJusu-hJQY1WYa4_4')
+model = genai.GenerativeModel('gemini-1')
 
 class Jarvis(widget.Widget):
     def __init__(self, **kwargs):
@@ -71,6 +68,7 @@ class Jarvis(widget.Widget):
         self.add_widget(self.vlh)
         self.add_widget(self.circle)
         # keyboard.on_press_key('`', self.on_keyboard_down)
+        keyboard.add_hotkey('`', self.start_recording)
 
     def take_command(self):
         r = sr.Recognizer()
@@ -82,32 +80,12 @@ class Jarvis(widget.Widget):
         try:
             print("Recognizing....")
             query = r.recognize_google(audio, language='en-in')
-            print(query)
-            if 'stop' not in query or 'exit' in query:
-                response = self.get_gemini_response(query)
-                speak(response)
-            else:
-                hour = datetime.now().hour
-                if hour >= 21 and hour < 6:
-                    speak("Good night sir, take care!")
-                else:
-                    speak("Have a good day sir!")
-                exit()
-
+            return query.lower()
+        
         except Exception:
             speak("Sorry I couldn't understand. Can you please repeat that?")
             query = 'None'
-        return query.lower()
-
-
-
-    def on_keyboard_down(self, event):
-        # Check if the pressed key is '`'
-        print(event.name)
-        if event.name == '`':
-            # Call the start_recording function
-            self.start_recording()
-  
+        
 
     def start_recording(self, *args):
         print('Recording started')
@@ -202,9 +180,6 @@ class Jarvis(widget.Widget):
     def handle_jarvis_commands(self, query):
         try:
             
-            gemini_response = self.get_gemini_response(query)
-             
-            
             if "how are you" in query:
                 speak("I am fine how are you.")
         
@@ -257,38 +232,6 @@ class Jarvis(widget.Widget):
                 speak("turn on all notifications")
                 pyautogui.click(x=1750, y=320, clicks=1, interval=0, button='left')
 
-        # elif 'calculate' in query:
-        #             app_id = ""
-        #             client = wolframalpha.Client(app_id)
-        #             ind = query.lower().split().index("calculate")
-        #             text = query.split()[ind + 1:]
-        #             res = client.query(" ".join(text))
-        #             try:
-        #                 ans = next(res.results).text
-        #                 speak("The answer is " + ans)
-        #                 print("the answer is " + ans)
-        #             except StopIteration:
-        #                 speak("I couldn't calculate that. Please try again.")
-
-        # elif 'what is' in query or 'who is' in query or 'which is' in query or 'where did ' in query:
-        #             app_id = ""  # Replace with your actual Wolfram Alpha App ID
-        #             client = wolframalpha.Client(app_id)
-        #             try:
-
-        #                 ind = query.lower().index('what is') if 'what is' in query.lower() else \
-        #                     query.lower().index('who is') if 'who is' in query.lower() else \
-        #                         query.lower().index('which is') if 'which is' in query.lower() else None
-
-        #                 if ind is not None:
-        #                     text = query.split()[ind + 2:]
-        #                     res = client.query(" ".join(text))
-        #                     ans = next(res.results).text
-        #                     speak("The answer is " + ans)
-        #                     print("The answer is " + ans)
-        #                 else:
-        #                     speak("I couldn't find that. Please try again.")
-        #             except StopIteration:
-        #                 speak("I couldn't find that. Please try again.")
 
             elif 'ip address' in query:
                     ip_address = find_my_ip()
@@ -326,8 +269,6 @@ class Jarvis(widget.Widget):
                             print("I've sent the email sir.")
                         else:
                             speak("Something went wrong while I was sending the mail. Please check the error logs sir.")
-
-        
 
             elif 'movie' in query:
                         movies_db = imdb.IMDb()
@@ -370,10 +311,13 @@ class Jarvis(widget.Widget):
                 speak("For your convenience, I am printing it on the screen sir.")
                 print(f"Description: {weather}\nTemperature: {temp}\nFeels like: {feels_like}")
             
-            elif gemini_response and gemini_response != "I'm sorry, I couldn't process that request.":
-                speak(gemini_response)
-                return
-                # speak(gemini_response)
+            else:
+                gemini_response = self.get_gemini_response(query)
+                gemini_response = gemini_response.replace("*","")
+                if gemini_response and gemini_response != "I'm sorry, I couldn't process that request.":
+                    speak(gemini_response)
+                    print(gemini_response)
+                
             
         except Exception as e:
             print(e)

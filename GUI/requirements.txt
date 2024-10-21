@@ -3,8 +3,6 @@ IMDbPY==2022.7.9
 keyboard==0.13.5
 Kivy==2.3.0
 Kivy_examples==2.3.0
-numpy==2.1.2
-protobuf==5.28.2
 PyAutoGUI==0.9.54
 pydub==0.25.1
 python-decouple==3.8

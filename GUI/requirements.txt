@@ -1,3 +1,21 @@
+gTTS==2.5.3
+IMDbPY==2022.7.9
+keyboard==0.13.5
+Kivy==2.3.0
+Kivy_examples==2.3.0
+numpy==2.1.2
+protobuf==5.28.2
+PyAutoGUI==0.9.54
+pydub==0.25.1
+python-decouple==3.8
+python-dotenv==1.0.1
+pyttsx3==2.90
+pywhatkit==5.4
+Requests==2.32.3
+sounddevice==0.4.6
+SpeechRecognition==3.10.0
+wikipedia==1.4.0
+wolframalpha==5.0.0
 aiohappyeyeballs==2.4.0
 aiohttp==3.10.5
 aiosignal==1.2.0
@@ -19,7 +37,7 @@ filelock==3.12.0
 frozenlist==1.4.0
 gitdb==4.0.11
 GitPython==3.1.43
-# google-ai-generativelanguage==0.6.10
+google-ai-generativelanguage
 google-api-core==2.19.1
 google-api-python-client==2.147.0
 google-auth==2.29.0

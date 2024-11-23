@@ -3,13 +3,36 @@ import wikipedia
 import pywhatkit as kit
 from email.message import EmailMessage
 import smtplib
+import gtts
+import os
 from decouple import config
+from pydub import AudioSegment
+from pydub.playback import play
+from constants import (
+    EMAIL,
+    PASSWORD,
+    IP_ADDR_API_URL,
+    NEWS_FETCH_API_URL,
+    WEATHER_FORECAST_API_URL,
+    SMTP_URL,
+    SMTP_PORT,
+    NEWS_FETCH_API_KEY,
+    WEATHER_FORECAST_API_KEY,
+)
 
-EMAIL = ""
-PASSWORD = ""
 
 
 
+def speak(text):
+    tts = gtts.gTTS(text,lang='en')
+    tts.save("output.wav")
+    
+    audio = AudioSegment.from_file("output.wav")
+    os.remove("output.wav")
+    audio = audio.speedup(playback_speed=1.5)
+    
+    play(audio)
+    
 def find_my_ip():
     ip_address = requests.get('https://api64.ipify.org?format=json').json()
     return ip_address["ip"]
@@ -36,7 +59,7 @@ def send_email(receiver_add, subject, message):
         email['From'] = EMAIL
 
         email.set_content(message)
-        s = smtplib.SMTP("smtp.gmail.com", 587)
+        s = smtplib.SMTP(SMTP_URL, SMTP_PORT)
         s.starttls()
         s.login(EMAIL, PASSWORD)
         s.send_message(email)
@@ -50,8 +73,14 @@ def send_email(receiver_add, subject, message):
 
 def get_news():
     news_headline = []
-    result = requests.get(f"https://newsapi.org/v2/top-headlines?country=in&category=general&apiKey"
-                          f"=").json()
+    result = requests.get(
+        NEWS_FETCH_API_URL,
+        params={
+            "country":"in",
+            "category":"general",
+            "apiKey": NEWS_FETCH_API_KEY
+        },
+    ).json()
     articles = result["articles"]
     for article in articles:
         news_headline.append(article["title"])
@@ -59,8 +88,14 @@ def get_news():
 
 
 def weather_forecast(city):
-    res = requests.get(f"https://api.openweathermap.org/data/2.5/weather?q={city}&appid"
-                       f"=&units=metric").json()
+    res = requests.get(
+        WEATHER_FORECAST_API_URL,
+        params={
+            "q":city,
+            "appid":WEATHER_FORECAST_API_KEY,
+            "units":"metric"
+        },
+        ).json()
     weather = res["weather"][0]["main"]
     temp = res["main"]["temp"]
     feels_like = res["main"]["feels_like"]

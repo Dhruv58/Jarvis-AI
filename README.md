@@ -1,13 +1,13 @@
-## ⚠️ !WARNING! ⚠️ GUI will not run from the main branch, it's under development in development branch
+## JARVIS AI
 
 ### Steps to run on your system.
 Run following commands on terminal
 - git clone https://github.com/Dhruv58/Jarvis-AI.git
-- python -m venv venv
+- conda create --name myenv
 - Activate Virtual Environment
   - Windows
-    - venv\Scripts\activate
+    - conda activate myenv
   - Linux
-    - source venv/Scripts/activate.(sh | fish) (depending on your shell)
+    - source activate myenv
 - pip install -r requirements.txt
 - python main.py

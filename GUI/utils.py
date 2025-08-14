@@ -28,8 +28,7 @@ def speak(text):
     tts.save("output.wav")
     
     audio = AudioSegment.from_file("output.wav")
-    os.remove("output.wav")
-    audio = audio.speedup(playback_speed=1.5)
+    
     
     play(audio)
     
